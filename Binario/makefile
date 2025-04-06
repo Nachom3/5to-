@@ -1,25 +1,21 @@
-# Nombre del ejecutable
-TARGET = ejecutable
-
-# Archivos fuente
-SRC = complemento2.c
-
-# Compilador
 CC = gcc
+CFLAGS = -Wall
+LASTBUILD = .lastbuild
+RUNBAT = run_last.bat
 
-# Flags opcionales (podés sumar -Wall para ver warnings)
-CFLAGS = 
+# Compilar: make complemento2
+%:
+	$(CC) $(CFLAGS) $@.c -o $@.exe
+	@echo $@.exe > $(LASTBUILD)
+	@echo Compilado: $@.exe
 
-# Regla principal
-all: $(TARGET)
+# Ejecutar: make run
+run:
+	@for /f %%i in ($(LASTBUILD)) do ( \
+		echo @echo Ejecutando: %%i > $(RUNBAT) && \
+		echo %%i >> $(RUNBAT) \
+	) && call $(RUNBAT)
 
-$(TARGET): $(SRC)
-	$(CC) $(CFLAGS) -o $(TARGET).exe $(SRC)
-
-#run
-run: $(TARGET)
-	.\$(TARGET).exe
-
-# Limpia el ejecutable
+# Limpiar: make clean
 clean:
-	del $(TARGET).exe
+	del /f /q *.exe $(LASTBUILD) $(RUNBAT)

@@ -3,8 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
-
 int main(){
     unsigned mask = 1 << 31;
 
