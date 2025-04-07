@@ -11,13 +11,18 @@
 
 void mostrarmediciones(unsigned int numero);
 
+int errordelectura(unsigned int numero);
+
 int main(){
     unsigned int numero;
     
     printf("Ingrese el numero entero con la informacion");
     scanf("%u", &numero);   
+    
+    
 
     mostrarmediciones(numero);
+
 
 
     return 0;
@@ -36,5 +41,11 @@ void mostrarmediciones(unsigned int numero){
     numero = numero >> 7;
 
     printf("La presion es de: %u \n ", numero & presion);
+
+}
+
+
+int errordelectura(unsigned int numero){
+    
 
 }
