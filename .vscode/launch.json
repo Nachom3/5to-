@@ -7,7 +7,7 @@
       "request": "launch",
       "args": [],
       "stopAtEntry": false,
-      "externalConsole": tru,
+      "externalConsole": true,
       "cwd": "c:/Users/ignam/OneDrive/Desktop/5to/Binario",
       "program": "c:/Users/ignam/OneDrive/Desktop/5to/Binario/build/Debug/outDebug",
       "MIMode": "gdb",
