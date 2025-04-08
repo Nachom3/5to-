@@ -27,11 +27,11 @@ void mostrarPermisos(int unsigned numero){
     }else{
         printf("Es para mujeres ");
     }
-    int mask,año=0;
-    mask = 1 << año;
-    while(año < 6){
+    int mask,año=1;
+    mask = 1;
+    while(año <= 6){
         if(mask && numero){
-            printf(", de %d ano", año+1);
+            printf(", de %d ano", año);
         }
         año ++;
         mask = 0;
