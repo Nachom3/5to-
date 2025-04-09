@@ -3,41 +3,41 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-long long maxlong();
 
-int potImparesDos(unsigned int numero);
+long long devolverlong();
 
-int main() {
-    long long numero;
+int potenciasimpares(unsigned int numero);
 
-    numero = maxlong(numero);
+int main(){
+    long long numero = devolverlong();
+    
     printf("%lld\n", numero);
 
     unsigned int numero2;
-    printf("Ingrese un numero a analizar\n");
+    
+    printf("Ingrese el entero: \n");
     scanf("%d", &numero2);
-    int contador = potImparesDos(numero2);
 
-    printf("El numero %d tiene %d impares potencia de dos bits en 1", numero2, contador);
-
+    int cont = potenciasimpares(numero2);
+    
+    printf("Tiene %d", cont);
+    
     return 0;
 }
 
-long long maxlong(){
-    long long mask = ~(1LL  << 63);
-    return mask;
+long long devolverlong(){
+    return ~(1LL<<63);
 }
 
-int potImparesDos(unsigned int numero){
-    int unsigned mask = 1;
-    int contador=0;
-    for (int i = 0; i<32; i++)
-    {
-        if((mask & numero) && (i % 2 == 0) && (i!=0)){
-            contador ++;
+int potenciasimpares(unsigned int numero){
+    unsigned int mask = 1;
+    int cont = 0;
+    while(mask >0){
+        if(numero & mask){
+            cont ++;
         }
-        mask = mask << 1;
+        mask = mask << 2;
     }
-    
-    return contador;
+
+    return cont;
 }
