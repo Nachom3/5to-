@@ -12,5 +12,7 @@
 #include <string.h>
 #include <time.h>
 
+int simular_nivel(Nivel *nivel, Mapa *mapa, DisposicionTorres colocar_torres);
 
-#endif
+
+#endif  
