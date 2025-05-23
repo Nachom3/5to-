@@ -46,18 +46,18 @@ static void hsv_to_rgb_ansi(float h, int *r, int *g, int *b) {
     *b = (int)(b_f * 5 + 0.5);
 }
 
-static int color_de_vida(int vida, int vida_max) {
-    if (vida <= 1) return RED;
-    if (vida >= vida_max) return GREEN;
+//static int color_de_vida(int vida, int vida_max) {
+    //if (vida <= 1) return RED;
+    //if (vida >= vida_max) return GREEN;
 
-    int steps = vida_max - 2;
-    int step = vida_max - vida;
-    float hue = 120.0f * step / (float)steps;
+    //int steps = vida_max - 2;
+    //int step = vida_max - vida;
+    //float hue = 120.0f * step / (float)steps;
 
-    int r, g, b;
-    hsv_to_rgb_ansi(hue, &r, &g, &b);
-    return ANSI_COLOR_INDEX(r, g, b);
-}
+    //int r, g, b;
+    //hsv_to_rgb_ansi(hue, &r, &g, &b);
+  //  return ANSI_COLOR_INDEX(r, g, b);
+//}
 
 void imprimir_casilla(TipoCasilla tipo, int vida, int vida_max) {
     switch(tipo) {
@@ -68,10 +68,10 @@ void imprimir_casilla(TipoCasilla tipo, int vida, int vida_max) {
             printf("T  ");
             return;
         case ENEMIGO:
-            int color = color_de_vida(vida, vida_max);
+            //int color = color_de_vida(vida, vida_max);
             // Usar esta linea cuando se quieran imprimir vidas en vez de colores
-            // printf("%d  ", vida);
-            printf("\x1b[38;5;%dm%-3s\x1b[0m", color, "*");
+            printf("%d  ", vida);
+            //printf("\x1b[38;5;%dm%-3s\x1b[0m", color, "*");
             return;
         case BLOQUEADO:
         case VACIO:

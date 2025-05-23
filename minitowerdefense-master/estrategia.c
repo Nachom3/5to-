@@ -35,6 +35,9 @@ static int determinar_posicion_torre(int *casilla_elegida, int cant_validas) {
     return nueva_posicion;
 }
 
+static int determinar_posicion_backtracking(int *casilla_elegida, int cant_validas){
+    
+}
 
 void disponer(Nivel* nivel, Mapa* mapa) {
     int cantidad_casillas = mapa->alto * mapa->ancho;
@@ -54,8 +57,20 @@ void disponer(Nivel* nivel, Mapa* mapa) {
 }
 
 void disponer_con_backtracking(Nivel* nivel, Mapa* mapa) {
-    /* A cargo de la/el estudiante */
-    return;
+    int cantidad_casillas = mapa->alto * mapa->ancho;
+    Coordenada posiciones_validas_torre[cantidad_casillas];
+    int casilla_elegida[cantidad_casillas];
+    for(int i = 0; i < cantidad_casillas; casilla_elegida[i++] = 0);
+
+    int cant_validas = posiciones_validas(posiciones_validas_torre, mapa->casillas, mapa->alto, mapa->ancho);
+
+    for (int colocadas = 0; colocadas < mapa->cant_torres; colocadas++) {
+        int nueva_torre = determinar_posicion_backtracking(casilla_elegida, cant_validas);
+        casilla_elegida[nueva_torre] = 1;
+        int nueva_torre_x = posiciones_validas_torre[nueva_torre].x;
+        int nueva_torre_y = posiciones_validas_torre[nueva_torre].y;
+        colocar_torre(mapa, nueva_torre_x, nueva_torre_y, colocadas);
+    }
 }
 
 void disponer_custom(Nivel* nivel, Mapa* mapa) {
