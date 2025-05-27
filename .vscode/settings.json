@@ -59,5 +59,6 @@
   "files.associations": {
     "estrategia.h": "c",
     "pila.h": "c"
-  }
+  },
+  "C_Cpp.errorSquiggles": "enabled"
 }

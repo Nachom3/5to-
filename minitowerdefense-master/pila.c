@@ -1,4 +1,6 @@
 #include "pila.h"
+#include "nivel.h"
+
 
 Pila *pila_crear(){
 	Pila *nueva = malloc(sizeof(Pila));
@@ -12,13 +14,14 @@ int pila_es_vacia(Pila* pila){
 	return 0;
 }
 
-int pila_tope(Pila* pila){
-	if(pila->ultimo != -1){
-		return pila->datos[pila->ultimo];
-	}
-	return -1;
+Coordenada pila_tope(Pila* pila){
+    if(pila->ultimo != -1){
+        return pila->datos[pila->ultimo];
+    }
+    Coordenada invalida = { -1, -1 };
+    return invalida;
 }
-void pila_apilar(Pila* pila, int num){
+void pila_apilar(Pila* pila, Coordenada num){
 	if(pila->ultimo >= MAX_PILA-1){
 		printf("error\n");
 	}else{

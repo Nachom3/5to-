@@ -76,7 +76,7 @@ int simular_nivel(Nivel *nivel, Mapa *mapa, DisposicionTorres colocar_torres) {
         mostrar_mapa(mapa, nivel->enemigos);
 
         escape += simular_turno(mapa, nivel, posiciones_ataque, nro_ataques_efectivos);
-        sleep(1);
+        sleep(3);
     }
 
     return !(nivel->enemigos->cantidad_activos);
@@ -86,8 +86,8 @@ static int mostrar_menu(DisposicionTorres estrategia_actual, char *ruta_nivel_ac
     int opcion = 3;
 
     limpiar_pantalla();
-    printf("\n--- Menú del simulador ---\n");
-    printf("1. Seleccionar estrategia (actual: %s)\n", (estrategia_actual == disponer) ? "Básica" : "|");
+    printf("\n--- Menu del simulador ---\n");
+    printf("1. Seleccionar estrategia (actual: %s)\n", (estrategia_actual == disponer_con_backtracking) ? "Backtracking" : (estrategia_actual == disponer_custom) ? "Custom" : "Basica");
     printf("2. Seleccionar nivel (actual: %s)\n", ruta_nivel_actual);
     printf("3. Iniciar simulación\n");
     printf("0. Salir\n");
@@ -161,7 +161,7 @@ int main() {
                 
                 printf("Vas a jugar en el sigueinte nivel\n");
                 mostrar_mapa(mapa, nivel->enemigos);
-                sleep(2);
+                sleep(3);
                 break;
             case 3:
                 if(memoria_a_liberar) {

@@ -10,7 +10,6 @@ void disponer(Nivel* nivel, Mapa* mapa);
 
 void disponer_con_backtracking(Nivel* nivel, Mapa* mapa);
 
-
 void disponer_custom(Nivel* nivel, Mapa* mapa);
 
 #endif

@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include "simulador.h"
 #include "pila.h"
+typedef struct {
+    Coordenada coord;
+    int indice_posicion; // índice en posiciones_validas_torre
+} EstadoTorre;
 
 static int posiciones_validas(Coordenada *validas, TipoCasilla **casillas, int alto, int ancho) {
     int cant_posiciones_validas = 0;
@@ -54,75 +58,71 @@ void disponer(Nivel* nivel, Mapa* mapa) {
         colocar_torre(mapa, nueva_torre_x, nueva_torre_y, colocadas);
     }
 }
-//numero
-void disponer_con_backtracking(Nivel* nivel, Mapa* mapa) {
-    int cantidad_casillas = mapa->alto * mapa->ancho; // Total de casillas posibles
 
-    Coordenada posiciones_validas_torre[cantidad_casillas];// Lista de posiciones donde se puede poner una torre
-
-    int casilla_elegida[cantidad_casillas];// Marca si ya usaste esa posición
-    for (int i = 0; i < cantidad_casillas; i++) casilla_elegida[i] = 0;
-
-    int cant_validas = posiciones_validas(posiciones_validas_torre, mapa->casillas, mapa->alto, mapa->ancho);// Llenamos el array con las posiciones válidas y cuántas hay
-
-    // Creamos una pila para guardar los pasos
-    Pila* pila = pila_crear();
-    int numero_torres = 0; // cuántas torres llevamos colocadas
-
-    int indices_por_torre[mapa->cant_torres]; // Guarda para cada torre cuál fue el índice de posición que estamos probando
-    for (int i = 0; i < mapa->cant_torres; i++) indices_por_torre[i] = 0;
-
-    while (numero_torres >= 0) {
-        // Si ya colocamos todas las torres, terminamos
-        if (numero_torres == mapa->cant_torres) {
-            pila_destruir(pila);
-            return;
-        }
-
-        int i = indices_por_torre[numero_torres]; // posición que estamos probando en este nivel
-        int found = 0; // para saber si encontramos una posición válida
-
-        while (i < cant_validas) {
-            if (!casilla_elegida[i]) { // si no la usamos antes 
-                Coordenada pos = posiciones_validas_torre[i];
-
-                // Colocamos la torre en el mapa
-                colocar_torre(mapa, pos.x, pos.y, numero_torres);
-                casilla_elegida[i] = 1; // la marcamos como usada
-                pila_apilar(pila, i); // guardamos esta elección
-
-                // Avanzamos al siguiente nivel
-                indices_por_torre[numero_torres] = i;
-                numero_torres++;
-                indices_por_torre[numero_torres] = 0; // empezamos desde 0 en el nuevo nivel
-                found = 1;
-                break;
+static void limpiar_torres(Mapa* mapa) {
+    for (int i = 0; i < mapa->alto; i++) {
+        for (int j = 0; j < mapa->ancho; j++) {
+            if (mapa->casillas[i][j] == TORRE) {
+                mapa->casillas[i][j] = VACIO;
             }
-            i++; // probamos la siguiente posición
-        }
-
-        if (!found) {
-            // No encontramos posición → hacemos backtracking
-            if (numero_torres == 0) break; // no hay más atrás, se terminó
-
-            numero_torres--; // volvemos al nivel anterior
-            int last_i = pila_tope(pila); // recuperamos la última posición usada
-            pila_desapilar(pila); // la sacamos de la pila
-
-            // Quitamos la torre del mapa
-            Coordenada pos = posiciones_validas_torre[last_i];
-            mapa->casillas[pos.x][pos.y] = VACIO;
-            casilla_elegida[last_i] = 0; // liberamos la posición
-
-            // Probamos la siguiente opción en ese nivel
-            indices_por_torre[numero_torres] = last_i + 1;
         }
     }
+}
+void disponer_con_backtracking(Nivel *nivel, Mapa* mapa) {
+    int casillas_totales = mapa->alto * mapa->ancho;
+    Coordenada posiciones_validas_torre[casillas_totales];
+    int cant_validas = posiciones_validas(posiciones_validas_torre, mapa->casillas, mapa->alto, mapa->ancho);
 
-    pila_destruir(pila); // por si sale del while sin éxito
+    Pila *pila = pila_crear();
+    int indices[MAX_PILA] = {0}; 
+    int torre_actual = 0;
+
+        while (torre_actual >= 0) {
+        limpiar_torres(mapa); // Limpia SIEMPRE antes de cualquier intento
+
+        for (int i = 0; i < torre_actual; i++)
+            colocar_torre(mapa, pila->datos[i].x, pila->datos[i].y, i);
+
+        printf("torre_actual: %d\n", torre_actual); 
+        if (torre_actual == mapa->cant_torres) {
+            if (simular_nivel(nivel, mapa, disponer_con_backtracking)) {
+                pila_destruir(pila);
+                return;
+            }
+            // Backtrack
+            torre_actual--;
+            pila_desapilar(pila);
+            indices[torre_actual]++;
+        } else if (indices[torre_actual] >= cant_validas) {
+            indices[torre_actual] = 0;
+            if (torre_actual == 0) 
+            break;
+            torre_actual--;
+            pila_desapilar(pila);
+            indices[torre_actual]++;
+        } else {
+            int repetida = 0;
+            for (int j = 0; j < torre_actual; j++) {
+                if (pila->datos[j].x == posiciones_validas_torre[indices[torre_actual]].x &&
+                    pila->datos[j].y == posiciones_validas_torre[indices[torre_actual]].y) {
+                    repetida = 1;
+                    break;
+                }
+            }
+            if (repetida) {
+                indices[torre_actual]++;
+            } else {
+                pila_apilar(pila, posiciones_validas_torre[indices[torre_actual]]);
+                torre_actual++;
+                if (torre_actual < mapa->cant_torres)
+                    indices[torre_actual] = 0;
+            }
+        }
+    }
+    pila_destruir(pila);
 }
 
-void disponer_custom(Nivel* nivel, Mapa* mapa) {
+    void disponer_custom(Nivel* nivel, Mapa* mapa) {
     /* A cargo de la/el estudiante */
     return;
 }
