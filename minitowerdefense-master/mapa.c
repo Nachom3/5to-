@@ -5,6 +5,18 @@ void limpiar_pantalla() {
     system(limpiar);
 }
 
+Mapa copiar_mapa(Mapa original) {
+    Mapa copia = original;
+    copia.torres = malloc(original.cant_torres * sizeof(Coordenada));
+    memcpy(copia.torres, original.torres, original.cant_torres * sizeof(Coordenada));
+    copia.casillas = malloc(original.alto * sizeof(TipoCasilla *));
+    for (int i = 0; i < original.alto; i++) {
+        copia.casillas[i] = malloc(original.ancho * sizeof(TipoCasilla));
+        memcpy(copia.casillas[i], original.casillas[i], original.ancho * sizeof(TipoCasilla));
+    }
+    return copia;
+}   
+
 Mapa *inicializar_mapa(int ancho, int alto, int cant_torres, int distancia_ataque) {
     Mapa *mapa = malloc(sizeof(Mapa));
     mapa->casillas = malloc(sizeof(TipoCasilla*) * alto);
@@ -83,7 +95,7 @@ void imprimir_casilla(TipoCasilla tipo, int vida, int vida_max) {
 static void imprimir_borde_horizontal(int ancho, int top) {
     top ? printf("╔") : printf("╚");
     for (int i = 0; i < ancho; i++)
-        printf("═══");
+        printf("---");
     top ? printf("╗\n") : printf("╝");
 }
 
@@ -93,7 +105,7 @@ void mostrar_mapa(Mapa *mapa, Enemigos *enemigos) {
     imprimir_borde_horizontal(mapa->ancho, 1);
 
     for (int x = 0; x < mapa->alto; x++) {
-        printf("║");
+        printf("|");
         for (int y = 0; y < mapa->ancho; y++) {
             TipoCasilla c = mapa->casillas[x][y];
             Coordenada coord;

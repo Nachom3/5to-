@@ -7,7 +7,7 @@
 #include <string.h>
 #include "nivel.h"
 
-#define MAX_PILA 5
+#define MAX_PILA 100
 
 typedef struct _Pila{
 	Coordenada datos[MAX_PILA];

@@ -39,6 +39,7 @@ static int area_ataque(int distancia) {
     return 4 * distancia * (distancia + 1);
 }
 
+
 static int calcular_posiciones(Coordenada posicion_torre, Coordenada *posiciones_ataque, int indice_ataque, int ancho, int alto, int distancia_ataque) {
     int nro_ataques = 0;
 
@@ -81,6 +82,26 @@ int simular_nivel(Nivel *nivel, Mapa *mapa, DisposicionTorres colocar_torres) {
 
     return !(nivel->enemigos->cantidad_activos);
 }
+int simular_nivel2(Nivel *nivel, Mapa *mapa) {
+    //mapa ya debe tener torres colocadas.
+    inicializar_turno_notorres(nivel, mapa);
+
+    int nro_ataques = mapa->cant_torres * area_ataque(mapa->distancia_ataque);
+    Coordenada posiciones_ataque[nro_ataques];
+    int nro_ataques_efectivos = 0;
+
+    for (int i = 0; i < mapa->cant_torres; i++) {
+        nro_ataques_efectivos += calcular_posiciones(mapa->torres[i], posiciones_ataque, nro_ataques_efectivos, mapa->ancho, mapa->alto, mapa->distancia_ataque);
+        //nro ataques efectivo = cantidad de casillas atacadas por torres, dentro del mapa, sin importar que tipo de casilla es.
+    }
+    int escape = 0;
+    for (int turno = 0; nivel->enemigos->cantidad_activos && !escape; turno++) {
+        escape += simular_turno(mapa, nivel, posiciones_ataque, nro_ataques_efectivos);
+    }
+
+    return !(nivel->enemigos->cantidad_activos);
+}
+
 
 static int mostrar_menu(DisposicionTorres estrategia_actual, char *ruta_nivel_actual) {
     int opcion = 3;

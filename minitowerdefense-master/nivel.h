@@ -3,6 +3,7 @@
 
 #include "stdlib.h"
 #include "stdio.h"
+#include "string.h"
 
 typedef struct {
     int x, y;
@@ -23,6 +24,8 @@ typedef struct {
     Enemigos *enemigos;
     Camino *camino;
 } Nivel;
+
+Nivel copiar_nivel(Nivel original); 
 
 Nivel *inicializar_nivel(int largo_camino, int cant_enemigos, int vida_inicial);
 

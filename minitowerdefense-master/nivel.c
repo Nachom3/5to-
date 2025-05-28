@@ -60,6 +60,31 @@ void mostrar_nivel(Nivel *nivel) {
     mostrar_enemigos(nivel->enemigos);
 }
 
+Nivel copiar_nivel(Nivel original) {
+    Nivel cpy;
+    cpy.enemigos = malloc(sizeof(Enemigos));
+    *cpy.enemigos = *original.enemigos;
+
+    int cant = original.enemigos->cantidad;
+
+    cpy.enemigos->posiciones = malloc(cant * sizeof(Coordenada));
+    memcpy(cpy.enemigos->posiciones, original.enemigos->posiciones, cant * sizeof(Coordenada));
+
+    cpy.enemigos->vida = malloc(cant * sizeof(int));
+    memcpy(cpy.enemigos->vida, original.enemigos->vida, cant * sizeof(int));
+
+    cpy.enemigos->activos = malloc(cant * sizeof(int));
+    memcpy(cpy.enemigos->activos, original.enemigos->activos, cant * sizeof(int));
+
+    cpy.camino = malloc(sizeof(Camino));
+    *cpy.camino = *original.camino;
+
+    cpy.camino->posiciones = malloc(original.camino->largo_camino * sizeof(Coordenada));
+    memcpy(cpy.camino->posiciones, original.camino->posiciones, original.camino->largo_camino * sizeof(Coordenada));
+
+    return cpy;
+}
+
 Nivel *inicializar_nivel(int largo_camino, int cant_enemigos, int vida_inicial) {
     Nivel *nivel = malloc(sizeof(Nivel));
     nivel->camino = inicializar_camino(largo_camino);

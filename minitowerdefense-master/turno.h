@@ -10,4 +10,6 @@ int buscarEnemigo(Coordenada*, int, Coordenada);
 
 void inicializar_turno(Nivel *nivel, Mapa *mapa, DisposicionTorres estrategia);
 
+void inicializar_turno_notorres(Nivel *nivel, Mapa *mapa);
+
 #endif

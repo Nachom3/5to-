@@ -35,7 +35,8 @@ void pila_desapilar(Pila * pila){
 
 void pila_imprimir(Pila * pila){
 	for(int i = 0; i<=pila->ultimo; i++){
-		printf("%i\n", pila->datos[i]);
+		printf("%i\n", pila->datos[i].x);
+		printf("%i\n", pila->datos[i].y);
 	}
 }
 
