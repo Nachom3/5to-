@@ -1,0 +1,4 @@
+Jorge Newbery de Venado Tuerto,2,Teodelina,0
+Juventud pueyrredón,0,Unión y Cultura,0
+Sportivo Avellaneda,1,Nueva Era,3
+Sportivo Rivadavia,1,Centenario,2

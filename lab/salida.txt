@@ -1,0 +1,4 @@
+ABCD
+Esta es una cadena de texto larga
+Esta es una tambien es una cadena
+Si, tambien esta linea es texto
