@@ -58,7 +58,9 @@
   "C_Cpp_Runner.msvcSecureNoWarnings": false,
   "files.associations": {
     "estrategia.h": "c",
-    "pila.h": "c"
+    "pila.h": "c",
+    "nivel.h": "c",
+    "stdio.h": "c"
   },
   "C_Cpp.errorSquiggles": "enabled"
 }
