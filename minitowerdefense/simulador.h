@@ -10,6 +10,6 @@
 #include <string.h>
 #include <time.h>
 
-int simular_nivel_rapido(Nivel *nivel, Mapa *mapa);
+int simular_nivel2(Nivel *nivel, Mapa *mapa);
 
 #endif

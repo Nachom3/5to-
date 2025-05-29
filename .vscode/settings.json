@@ -60,7 +60,8 @@
     "estrategia.h": "c",
     "pila.h": "c",
     "nivel.h": "c",
-    "stdio.h": "c"
+    "stdio.h": "c",
+    "stdlib.h": "c"
   },
   "C_Cpp.errorSquiggles": "enabled"
 }

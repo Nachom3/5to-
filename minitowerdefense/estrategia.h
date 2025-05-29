@@ -12,5 +12,4 @@ void disponer_con_backtracking(Nivel* nivel, Mapa* mapa);
 
 void disponer_custom(Nivel* nivel, Mapa* mapa);
 
-int calidad_torre(Nivel* nivel, Mapa *mapa, Coordenada torre);
 #endif

@@ -83,9 +83,8 @@ int simular_nivel(Nivel *nivel, Mapa *mapa, DisposicionTorres colocar_torres) {
     return !(nivel->enemigos->cantidad_activos);
 }
 
-int simular_nivel_rapido(Nivel *nivel, Mapa *mapa) {
-    //mapa ya debe tener torres colocadas.
-    inicializar_turno_backtracking(nivel, mapa);
+int simular_nivel2(Nivel *nivel, Mapa *mapa) {
+    inicializar_turno2(nivel, mapa); //coloco torre antes de iniciar el turno
 
     int nro_ataques = mapa->cant_torres * area_ataque(mapa->distancia_ataque);
     Coordenada posiciones_ataque[nro_ataques];
@@ -93,13 +92,12 @@ int simular_nivel_rapido(Nivel *nivel, Mapa *mapa) {
 
     for (int i = 0; i < mapa->cant_torres; i++) {
         nro_ataques_efectivos += calcular_posiciones(mapa->torres[i], posiciones_ataque, nro_ataques_efectivos, mapa->ancho, mapa->alto, mapa->distancia_ataque);
-        //nro ataques efectivo = cantidad de casillas atacadas por torres, dentro del mapa, sin importar que tipo de casilla es.
     }
     int escape = 0;
     for (int turno = 0; nivel->enemigos->cantidad_activos && !escape; turno++) {
         escape += simular_turno(mapa, nivel, posiciones_ataque, nro_ataques_efectivos);
+        sleep(1);
     }
-
     return !(nivel->enemigos->cantidad_activos);
 }
 
