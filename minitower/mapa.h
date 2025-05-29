@@ -26,6 +26,5 @@ void mostrar_mapa(Mapa *mapa, Enemigos *enemigos);
 void liberar_mapa(Mapa *mapa);
 
 void limpiar_pantalla();
-
-Mapa copiar_mapa(Mapa original); 
+void copiar_mapa(Mapa *copia, Mapa *  original); 
 #endif

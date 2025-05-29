@@ -25,25 +25,27 @@ static int camino_abajo(Mapa *mapa, Coordenada *lider, int alto) {
 }
     
 static void decidir_nueva_posicion(Enemigos *enemigos, Mapa *mapa) {
-    Coordenada *lider = enemigos->posiciones;
+    Coordenada *lider = enemigos->posiciones; // primer enemigo
     int ancho = mapa->ancho;
     int alto = mapa->alto;
 
-    int direccion = rand() % 2; 
+    int direccion = rand() % 2; // 0 = abajo, 1 = derecha
     int hay_abajo = camino_abajo(mapa, lider, alto);
     int hay_derecha = camino_derecha(mapa, lider, ancho);
-    if ((lider->x >= alto && lider->y >= ancho && direccion) || 
-        !hay_abajo || (hay_derecha && direccion)) { 
+    //pregunta, que?, porque hay algo random???? y en que caso la posicion del lider va a ser mayor al alto?
+    if ((lider->x >= alto && lider->y >= ancho && direccion) || // fuera del mapa
+        !hay_abajo || (hay_derecha && direccion)) { // derecha forzada o derecha elegida
         lider->x++;
         return;
     }
     
+    // Abajo
     lider->y++;
 }
 
 static int actualizar_activos(Nivel *nivel, Mapa *mapa) {
     int escape = 0;
-    int mia = 0; 
+    int mia = 0; // mia delagaspera??? de que mia hablas.
     
     for (int i = 0; i < nivel->enemigos->cantidad ; i++) {
         if (nivel->enemigos->vida[i] == 0) {
@@ -69,8 +71,11 @@ static int enemigo_en_mapa(Coordenada enemigo, int ancho, int alto) {
 }
 
 static void actualizar_mapa(Nivel *nivel, Mapa *mapa) {
+    // Actualizar camino
     for (int i = 0; i < nivel->camino->largo_camino ; i++)
         mapa->casillas[nivel->camino->posiciones[i].y][nivel->camino->posiciones[i].x] = CAMINO;
+
+    // Actualizar enemigos
     for (int i = 0; i < nivel->enemigos->cantidad ; i++) {
         if(enemigo_en_mapa(nivel->enemigos->posiciones[i], mapa->ancho, mapa->alto) && nivel->enemigos->activos[i]) {
             mapa->casillas[nivel->enemigos->posiciones[i].y][nivel->enemigos->posiciones[i].x] = ENEMIGO;
@@ -102,34 +107,32 @@ static void disminuir_vidas(Nivel *nivel, Mapa *mapa, Coordenada *posiciones_ata
     for (int i = 0; i < nro_ataques; i++) {
         enemigo = es_enemigo(mapa->casillas[posiciones_ataque[i].x][posiciones_ataque[i].y]);
         if(!enemigo) continue;
+
+        //buscar enemigo encuentra la posicion en el array de enemigos del enemigo atacado en este ataque si es que lo hay.
         nro_enemigo = buscarEnemigo(nivel->enemigos->posiciones, nivel->enemigos->cantidad, posiciones_ataque[i]);
-        if (nivel->enemigos->vida[nro_enemigo])
+        if (nro_enemigo != -1 && nivel->enemigos->vida[nro_enemigo])
             nivel->enemigos->vida[nro_enemigo]--;
     }
 }
 
 int simular_turno(Mapa *mapa, Nivel *nivel, Coordenada posiciones_ataque[], int ataques_efectivos) {
-
+    // atacan las torres
     disminuir_vidas(nivel, mapa, posiciones_ataque, ataques_efectivos);
     int hubo_escape = actualizar_activos(nivel, mapa);
     
+    // avanza el enemigo 
+    // a paso redoblado 
+    // al viento desplegado 
+    // su rojo pabellón. 
     desplazar_enemigos(nivel->enemigos);
     decidir_nueva_posicion(nivel->enemigos, mapa);
     actualizar_mapa(nivel, mapa);
 
     return hubo_escape;
 }
-void inicializar_turno2(Nivel *nivel, Mapa *mapa) { // coloco torres antes de iniciar el turno
-    // posicion inicial
-    nivel->enemigos->posiciones[0].x = 0;
-    nivel->enemigos->posiciones[0].y = 0;
-    nivel->enemigos->vida[0] = nivel->enemigos->vida_inicial;
-
-    actualizar_mapa(nivel, mapa);
-}
-
 
 void inicializar_turno(Nivel *nivel, Mapa *mapa, DisposicionTorres colocar_torres) {
+    //llama a funcion pasado como argumento. era haskell no?.
     colocar_torres(nivel, mapa);
     
     // posicion inicial
@@ -138,4 +141,11 @@ void inicializar_turno(Nivel *nivel, Mapa *mapa, DisposicionTorres colocar_torre
     nivel->enemigos->vida[0] = nivel->enemigos->vida_inicial;
 
     actualizar_mapa(nivel, mapa);
+}
+void inicializar_turno_backtracking(Nivel *nivel, Mapa *mapa) {
+    // posicion inicial
+    nivel->enemigos->posiciones[0].x = 0;
+    nivel->enemigos->posiciones[0].y = 0;
+    nivel->enemigos->vida[0] = nivel->enemigos->vida_inicial;
+
 }

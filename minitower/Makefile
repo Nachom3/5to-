@@ -13,9 +13,9 @@ $(BIN): $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ $(LFLAGS)
 
 %.o: %.c $(DEPS)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@ $(LFLAGS)
 
 clean:
-	rm /Q *.o
+	rm -f *.o
 
 .PHONY: all clean

@@ -118,16 +118,11 @@ void mostrar_mapa(Mapa *mapa, Enemigos *enemigos) {
     printf("  Enemigos vivos: %d\n", enemigos->cantidad_activos);
     printf("  Vida inicial: %d\n\n", enemigos->vida_inicial);
 }
-Mapa copiar_mapa(Mapa original) {
-    Mapa copia = original;
-    // Copiar torres
-    copia.torres = malloc(original.cant_torres * sizeof(Coordenada));
-    memcpy(copia.torres, original.torres, original.cant_torres * sizeof(Coordenada));
+void copiar_mapa(Mapa *copia, Mapa *original) {
+    copia->cant_torres = original->cant_torres;
+    memcpy(copia->torres, original->torres, original->cant_torres * sizeof(Coordenada));
     // Copiar casillas (matriz)
-    copia.casillas = malloc(original.alto * sizeof(TipoCasilla *));
-    for (int i = 0; i < original.alto; i++) {
-        copia.casillas[i] = malloc(original.ancho * sizeof(TipoCasilla));
-        memcpy(copia.casillas[i], original.casillas[i], original.ancho * sizeof(TipoCasilla));
+    for (int i = 0; i < original->alto; i++) {
+        memcpy(copia->casillas[i], original->casillas[i], original->ancho * sizeof(TipoCasilla));
     }
-    return copia;
 }
