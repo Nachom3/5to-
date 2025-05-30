@@ -61,7 +61,8 @@
     "pila.h": "c",
     "nivel.h": "c",
     "stdio.h": "c",
-    "stdlib.h": "c"
+    "stdlib.h": "c",
+    "turno.h": "c"
   },
   "C_Cpp.errorSquiggles": "enabled"
 }

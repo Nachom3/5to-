@@ -16,6 +16,6 @@ $(BIN): $(OBJ)
 	$(CC) $(CFLAGS) -c $< -o $@ $(LFLAGS)
 
 clean:
-	rm -f *.o
+	del -f *.o
 
 .PHONY: all clean

@@ -2,8 +2,9 @@
 #define SIMULADOR_H
 
 #include "mapa.h"
+#include "estrategia.h"
 #include "archivo.h"
-
+#include "turno.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -11,5 +12,5 @@
 #include <time.h>
 
 int simular_nivel_rapido(Nivel *nivel, Mapa *mapa);
-int simular_nivel_rapido2(Nivel *nivel, Mapa *mapa, Coordenada torres[mapa->cant_torres]); 
+int simular_nivel(Nivel *nivel, Mapa *mapa, DisposicionTorres colocar_torres);
 #endif

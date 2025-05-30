@@ -22,23 +22,15 @@ static int posiciones_validas(Coordenada *validas, TipoCasilla **casillas, int a
 
     return cant_posiciones_validas;
 }
-
 static void colocar_torre(Mapa *mapa, int x, int y, int nro_torre) {
-    // actualizar torre
+    // Actualizar posición de la torre
     mapa->torres[nro_torre].x = x;
     mapa->torres[nro_torre].y = y;
 
-    // actualizar mapa
-    mapa->casillas[x][y] = TORRE;
+    // Actualizar el mapa
+    mapa->casillas[y][x] = TORRE;
 }
-static void quitar_torre(Mapa *mapa, int x, int y, int nro_torre) {
-    // actualizar torre
-    mapa->torres[nro_torre].x = -10;
-    mapa->torres[nro_torre].y = -10;
 
-    // actualizar mapa
-    mapa->casillas[x][y] = VACIO;
-}
 static int determinar_posicion_torre(int *casilla_elegida, int cant_validas) {
     int nueva_posicion = rand() % cant_validas;
     while(casilla_elegida[nueva_posicion])
@@ -65,163 +57,194 @@ void disponer(Nivel* nivel, Mapa* mapa) {
     }
 }
 
-static int buscar_indice(Coordenada coords[], int n, Coordenada buscada) {
-    for (int i = 0; i < n; i++) {
-        if (coords[i].x == buscada.x && coords[i].y == buscada.y) {
-            return i;
-        }
-    }
+
+/*  Auxiliar: devuelve el índice de la coordenada c dentro del vector v
+    (-1 si no está). Sirve para actualizar el bitmap cuando sacamos
+    la última torre de la pila.                                                    */
+static int indice_coord(Coordenada c, Coordenada v[], int n){
+    for (int i = 0; i < n; i++)
+        if (v[i].x == c.x && v[i].y == c.y) return i;
     return -1;
 }
 
+void disponer_con_backtracking(Nivel *nivel, Mapa *mapa){
+    int  total = mapa->alto * mapa->ancho;
+    Coordenada posiciones_validas_torre[total];
 
+    int cant_validas = posiciones_validas(posiciones_validas_torre, mapa->casillas,mapa->alto,mapa->ancho);
 
-void disponer_con_backtracking(Nivel* nivel, Mapa* mapa) {
-    /* A cargo de la/el estudiante */
-    int cantidad_casillas = mapa->alto * mapa->ancho;
-    Coordenada posiciones_validas_torre[cantidad_casillas];
-    
-    int cant_validas = posiciones_validas(posiciones_validas_torre, mapa->casillas, mapa->alto, mapa->ancho);
+    int bitmap[cant_validas];
+    for (int i = 0; i < cant_validas; i++) 
+        bitmap[i] = 0;
 
-    int usadas[cant_validas]; // Bitmap de coordenadas usadas (0 para false, 1 para true)
-    Pila *stack = pila_crear();
-    int indiceActual = 0;
-    
-    for (int i = 0; i < cant_validas; i++) {
-        usadas[i] = 0; 
+    Pila *pila = pila_crear();
+    for (int i = 0; i < mapa->cant_torres; i++) {
+        pila_apilar(pila, posiciones_validas_torre[i]);
+        bitmap[i] = 1;                       
     }
-    int funciono = 0;
-    /*Nivel *nivelCopia = inicializar_nivel(nivel->camino->largo_camino, nivel->enemigos->cantidad, nivel->enemigos->vida_inicial);*/
-    /*Mapa *mapaCopia = inicializar_mapa(mapa->ancho, mapa->alto, mapa->cant_torres, mapa->distancia_ataque);*/
-    /**/
-    while (!funciono) { 
-        // Paso 1: Intentar agregar una nueva coordenada al stack
-        if (stack->ultimo+1 < mapa->cant_torres) { 
-            int encontrado = 0; 
-            
-            // Buscamos la próxima coordenada disponible
-            for (int i = indiceActual; i < cant_validas; i++) {
-                if (usadas[i] == 0) { 
-                    pila_apilar(stack, posiciones_validas_torre[i]);
-                    usadas[i] = 1; 
-                    indiceActual = i + 1;
-                    encontrado = 1;
-                    break;
-                }
-            }
 
-            if (encontrado == 0) { // Si no se encontró una nueva coordenada
-                // No hay más coordenadas disponibles, hacemos backtrack
+    int gano = 0;
+    int NroBacktracks = 0;                     // *** cuánto “deslizamos” el array
 
-                if (pila_es_vacia(stack)) {
-                    pila_destruir(stack);
-                    printf("no hay ninguna solucion\n");
-                    funciono = 1;
-                    return;
-                }
+    /* ───── 3. ciclo principal ───────────────────────────────────── */
+    while (!gano) {
+        Mapa* mapa_copia = copiar_mapa(mapa);
+        Nivel* nivel_copia = copiar_nivel(nivel);
 
-                Coordenada ultima = pila_tope(stack);
-                pila_desapilar(stack);
-                // Buscamos su índice
-                int ultimo_indice = buscar_indice(posiciones_validas_torre, cant_validas, ultima);
-
-                if (ultimo_indice != -1) { 
-                   usadas[ultimo_indice] = 0;
-                }
-                indiceActual = ultimo_indice + 1;
-            }
+        for (int i = 0; i < mapa->cant_torres; i++)
+            colocar_torre(mapa_copia, pila->datos[i].x, pila->datos[i].y, i);
+        if (simular_nivel_rapido(nivel_copia, mapa_copia) == 1) {
+            for (int i = 0; i < mapa->cant_torres; i++)
+                colocar_torre(mapa, pila->datos[i].x, pila->datos[i].y,i);
+            gano = 1;
         }
-        else {
-            //aca evaluamos las torres en el stack, si funciona, terminar.
-            /*copiar_nivel(nivelCopia, nivel);*/
-            /*copiar_mapa(mapaCopia, mapa);*/
-            Coordenada torres[mapa->cant_torres];
-            for (int colocadas = 0; colocadas < mapa->cant_torres; colocadas++) {
-                int nueva_torre_x = stack->datos[colocadas].x;
-                int nueva_torre_y = stack->datos[colocadas].y;
-                torres[colocadas].x = nueva_torre_x;
-                torres[colocadas].y = nueva_torre_y;
-                /*colocar_torre(mapaCopia, nueva_torre_x, nueva_torre_y, colocadas);*/
+        liberar_mapa (mapa_copia);
+        liberar_nivel(nivel_copia);
+        if (gano) 
+            break;
+
+        /* 3-b  Generar la siguiente combinación -- usando
+                la idea de «mover» el array de posiciones válidas     */
+
+        /* quitar la última torre de la pila y des-marcarla en bitmap */
+        Coordenada ultima = pila_tope(pila);
+        pila_desapilar(pila);
+        int posUltima = indice_coord(ultima,posiciones_validas_torre,cant_validas);
+        if (posUltima != -1) 
+            bitmap[posUltima] = 0;
+        /* buscar la siguiente casilla libre después de posUltima     */
+        int pos_nueva = -1;
+        for (int i = posUltima + 1; i < cant_validas; i++)
+            if (bitmap[i] == 0){ 
+                pos_nueva = i; 
+                break; 
             }
-            if(simular_nivel_rapido2(nivel, mapa, torres) == 1){
-                funciono = 1;
-                for (int colocadas = 0; colocadas < mapa->cant_torres; colocadas++) {
-                    int nueva_torre_x = stack->datos[colocadas].x;
-                    int nueva_torre_y = stack->datos[colocadas].y;
-                    colocar_torre(mapa, nueva_torre_x, nueva_torre_y, colocadas);
-                }
-                pila_destruir(stack);
-            }            // Hacemos backtrack si la combinación no es válida
 
+        if (pos_nueva != -1) {
+            pila_apilar(pila, posiciones_validas_torre[pos_nueva]);/* hay otra casilla en la misma “ventana” */
+            bitmap[pos_nueva] = 1;
+        } else {
+            /* se agotó la ventana actual  →  deslizamos el array     */
+            NroBacktracks++;                       // ***
+            if (NroBacktracks + mapa->cant_torres > cant_validas) {
+                /* ya probamos todas las combinaciones posibles        */
+                printf("No existe solución con la cantidad de torres dada\n");
+                break;
+            }
 
-            if(funciono == 0){
-                Coordenada ultima = pila_tope(stack);
-                pila_desapilar(stack);
-            
-                int ultimo_indice = buscar_indice(posiciones_validas_torre, cant_validas, ultima);
-                if (ultimo_indice != -1) {
-                    usadas[ultimo_indice] = 0; // 0 para 'false'
-                }
-                indiceActual = ultimo_indice + 1;
+            /* mover la ventana una posición a la derecha             */
+            Coordenada tmp = posiciones_validas_torre[0];
+            for (int i = 0; i < cant_validas - 1; i++)
+                posiciones_validas_torre[i] = posiciones_validas_torre[i+1];
+            posiciones_validas_torre[cant_validas - 1] = tmp;
+
+            /* reconstruir la pila + bitmap con la nueva ventana      */
+            for (int i = 0; i < cant_validas; i++) 
+                bitmap[i] = 0;
+            pila->ultimo = -1;                  // vaciar pila
+
+            for (int i = 0; i < mapa->cant_torres; i++) {
+                pila_apilar(pila, posiciones_validas_torre[i]);
+                bitmap[i] = 1;
             }
         }
     }
 
-    /*liberar_nivel(nivelCopia);*/
-    /*liberar_mapa(mapaCopia);*/
+    pila_destruir(pila);
 }
 
+static int calidad_torre(Nivel* nivel, Mapa *mapa, Coordenada torre) {
+    int distancia_ataque = mapa->distancia_ataque;
+    int puntaje = 0;
+    
+    // Contamos caminos alcanzables
+    for (int dx = -distancia_ataque; dx <= distancia_ataque; dx++) {
+        for (int dy = -distancia_ataque; dy <= distancia_ataque; dy++) {
+            if (abs(dx) + abs(dy) > distancia_ataque) continue; // Distancia Manhattan
+            
+            int nuevo_x = torre.x + dx;
+            int nuevo_y = torre.y + dy;
 
-
-void disponer_custom(Nivel* nivel, Mapa* mapa) {
-    /* A cargo de la/el estudiante */
-    int cantidad_casillas = mapa->alto * mapa->ancho;
-    Coordenada posiciones_validas_torre[cantidad_casillas];
-
-    int cant_validas = posiciones_validas(posiciones_validas_torre, mapa->casillas, mapa->alto, mapa->ancho);
-
-    // ordeno las posiciones validas de torres segun su calidad.
-    for (int i = 0; i< cant_validas-1;i++){
-        for (int j = 0;j<cant_validas-i-1; j++){
-            if(calidad_torre(nivel, mapa, posiciones_validas_torre[j]) < calidad_torre(nivel, mapa, posiciones_validas_torre[j+1])){
-                //swap
-                Coordenada aux = posiciones_validas_torre[j];
-                posiciones_validas_torre[j] = posiciones_validas_torre[j+1];
-                posiciones_validas_torre[j+1] = aux;
+            if (nuevo_x < 0 || nuevo_y < 0) continue;
+            if (nuevo_x >= mapa->alto || nuevo_y >= mapa->ancho) continue;
+            
+            // Puntos por caminos encontrados
+            if(mapa->casillas[nuevo_x][nuevo_y] == CAMINO) {
+                int distancia = abs(dx) + abs(dy);
+                puntaje += 10 * (distancia_ataque - distancia + 1); // Más puntos a casillas cercanas
+            }
+            
+            // Penalización por torres cercanas
+            if(mapa->casillas[nuevo_x][nuevo_y] == TORRE) {
+                puntaje -= 15; // Penalización por solapamiento
             }
         }
     }
-    //esto es para probar, despues comentar.
-    for(int i = 0; i<cant_validas; i++){
-        printf("%i, ", calidad_torre(nivel, mapa, posiciones_validas_torre[i]));
+    
+    // Bonus por posición central
+    int distancia_centro_x = abs(torre.x - mapa->alto/2);
+    int distancia_centro_y = abs(torre.y - mapa->ancho/2);
+    puntaje += 3 * (mapa->alto/2 - distancia_centro_x);
+    puntaje += 3 * (mapa->ancho/2 - distancia_centro_y);
+    
+    return puntaje;
+}
+
+void disponer_custom(Nivel* nivel, Mapa* mapa) {
+    int cantidad_casillas = mapa->alto * mapa->ancho;
+    Coordenada posiciones_validas_torre[cantidad_casillas];
+    int calidades[cantidad_casillas];  // Array para almacenar calidades
+
+    int cant_validas = posiciones_validas(posiciones_validas_torre, mapa->casillas, mapa->alto, mapa->ancho);
+    
+    // Calculamos y almacenamos las calidades
+    for (int i = 0; i < cant_validas; i++) {
+        calidades[i] = calidad_torre(nivel, mapa, posiciones_validas_torre[i]);
     }
-    //de la lista ordenada, coloco las primeras/mejores torres.
+
+    // Ordenamiento por inserción (más eficiente que bubble sort para arrays pequeños)
+    for (int i = 1; i < cant_validas; i++) {
+        Coordenada coord_actual = posiciones_validas_torre[i];
+        int calidad_actual = calidades[i];
+        int j = i - 1;
+        
+        while (j >= 0 && calidades[j] < calidad_actual) {
+            posiciones_validas_torre[j + 1] = posiciones_validas_torre[j];
+            calidades[j + 1] = calidades[j];
+            j--;
+        }
+        
+        posiciones_validas_torre[j + 1] = coord_actual;
+        calidades[j + 1] = calidad_actual;
+    }
+
+    // Colocamos las torres en las mejores posiciones
     for (int colocadas = 0; colocadas < mapa->cant_torres; colocadas++) {
         int nueva_torre_x = posiciones_validas_torre[colocadas].x;
         int nueva_torre_y = posiciones_validas_torre[colocadas].y;
         colocar_torre(mapa, nueva_torre_x, nueva_torre_y, colocadas);
-    }
-    return;
-}
-
-int calidad_torre(Nivel* nivel, Mapa *mapa, Coordenada torre){
-    //calcula cuantos caminos ve y ataca cada torre.
-    int distancia_ataque = mapa->distancia_ataque;
-    int count = 0;
-    for (int dx = -distancia_ataque; dx <= distancia_ataque; dx++) {
-        for (int dy = -distancia_ataque; dy <= distancia_ataque; dy++) {
-            int nuevo_x = torre.x + dx;
-            int nuevo_y = torre.y + dy;
-
-            if (dx == 0 && dy == 0) continue;
-            if (nuevo_x < 0 || nuevo_y < 0) continue;
-            if (nuevo_x >= mapa->alto || nuevo_y >= mapa->ancho) continue;
+        
+        // Recalculamos calidades después de colocar cada torre
+        if (colocadas < mapa->cant_torres - 1) {
+            for (int i = colocadas + 1; i < cant_validas; i++) {
+                calidades[i] = calidad_torre(nivel, mapa, posiciones_validas_torre[i]);
+            }
             
-            if(mapa->casillas[nuevo_x][nuevo_y] == CAMINO) {
-                count++;
+            // Reordenamos las posiciones restantes
+            for (int i = colocadas + 2; i < cant_validas; i++) {
+                Coordenada coord_actual = posiciones_validas_torre[i];
+                int calidad_actual = calidades[i];
+                int j = i - 1;
+                
+                while (j > colocadas && calidades[j] < calidad_actual) {
+                    posiciones_validas_torre[j + 1] = posiciones_validas_torre[j];
+                    calidades[j + 1] = calidades[j];
+                    j--;
+                }
+                
+                posiciones_validas_torre[j + 1] = coord_actual;
+                calidades[j + 1] = calidad_actual;
             }
         }
-    } 
-    return count;
+    }
 }
-

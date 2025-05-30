@@ -118,11 +118,44 @@ void mostrar_mapa(Mapa *mapa, Enemigos *enemigos) {
     printf("  Enemigos vivos: %d\n", enemigos->cantidad_activos);
     printf("  Vida inicial: %d\n\n", enemigos->vida_inicial);
 }
-void copiar_mapa(Mapa *copia, Mapa *original) {
-    copia->cant_torres = original->cant_torres;
+Mapa* copiar_mapa(Mapa* original) {
+    Mapa* copia = malloc(sizeof(Mapa));
+    if (!copia) {
+        printf("Error: No se pudo asignar memoria para la copia del mapa.\n");
+        return NULL;
+    }
+
+    *copia = *original;
+
+    copia->torres = malloc(original->cant_torres * sizeof(Coordenada));
+    if (!copia->torres) {
+        printf("Error: No se pudo asignar memoria para las torres.\n");
+        free(copia);
+        return NULL;
+    }
     memcpy(copia->torres, original->torres, original->cant_torres * sizeof(Coordenada));
-    // Copiar casillas (matriz)
+
+    copia->casillas = malloc(original->alto * sizeof(TipoCasilla*));
+    if (!copia->casillas) {
+        printf("Error: No se pudo asignar memoria para las casillas.\n");
+        free(copia->torres);
+        free(copia);
+        return NULL;
+    }
     for (int i = 0; i < original->alto; i++) {
+        copia->casillas[i] = malloc(original->ancho * sizeof(TipoCasilla));
+        if (!copia->casillas[i]) {
+            printf("Error: No se pudo asignar memoria para las casillas en la fila %d.\n", i);
+            for (int j = 0; j < i; j++) {
+                free(copia->casillas[j]);
+            }
+            free(copia->casillas);
+            free(copia->torres);
+            free(copia);
+            return NULL;
+        }
         memcpy(copia->casillas[i], original->casillas[i], original->ancho * sizeof(TipoCasilla));
     }
+
+    return copia;
 }

@@ -73,17 +73,83 @@ void liberar_nivel(Nivel *nivel) {
     free(nivel);
 }
 
-void copiar_nivel(Nivel * copia, Nivel *original) {
+Nivel* copiar_nivel(Nivel* original) {
+    // Asignar memoria para la copia
+    Nivel* copia = malloc(sizeof(Nivel));
+    if (!copia) {
+        printf("Error: No se pudo asignar memoria para la copia del nivel.\n");
+        return NULL;
+    }
+
+    // Copiar valores simples
+    *copia = *original;
+
     // Copiar enemigos
+    copia->enemigos = malloc(sizeof(Enemigos));
+    if (!copia->enemigos) {
+        printf("Error: No se pudo asignar memoria para los enemigos.\n");
+        free(copia);
+        return NULL;
+    }
+    *copia->enemigos = *original->enemigos;
+
     int cant = original->enemigos->cantidad;
 
-    copia->enemigos->cantidad = cant;
-    copia->enemigos->cantidad_activos = original->enemigos->cantidad_activos;
-    copia->enemigos->vida_inicial = original->enemigos->vida_inicial;
-
+    copia->enemigos->posiciones = malloc(cant * sizeof(Coordenada));
+    if (!copia->enemigos->posiciones) {
+        printf("Error: No se pudo asignar memoria para las posiciones de los enemigos.\n");
+        free(copia->enemigos);
+        free(copia);
+        return NULL;
+    }
     memcpy(copia->enemigos->posiciones, original->enemigos->posiciones, cant * sizeof(Coordenada));
 
+    copia->enemigos->vida = malloc(cant * sizeof(int));
+    if (!copia->enemigos->vida) {
+        printf("Error: No se pudo asignar memoria para las vidas de los enemigos.\n");
+        free(copia->enemigos->posiciones);
+        free(copia->enemigos);
+        free(copia);
+        return NULL;
+    }
     memcpy(copia->enemigos->vida, original->enemigos->vida, cant * sizeof(int));
 
+    copia->enemigos->activos = malloc(cant * sizeof(int));
+    if (!copia->enemigos->activos) {
+        printf("Error: No se pudo asignar memoria para los enemigos activos.\n");
+        free(copia->enemigos->vida);
+        free(copia->enemigos->posiciones);
+        free(copia->enemigos);
+        free(copia);
+        return NULL;
+    }
     memcpy(copia->enemigos->activos, original->enemigos->activos, cant * sizeof(int));
+
+    // Copiar camino
+    copia->camino = malloc(sizeof(Camino));
+    if (!copia->camino) {
+        printf("Error: No se pudo asignar memoria para el camino.\n");
+        free(copia->enemigos->activos);
+        free(copia->enemigos->vida);
+        free(copia->enemigos->posiciones);
+        free(copia->enemigos);
+        free(copia);
+        return NULL;
+    }
+    *copia->camino = *original->camino;
+
+    copia->camino->posiciones = malloc(original->camino->largo_camino * sizeof(Coordenada));
+    if (!copia->camino->posiciones) {
+        printf("Error: No se pudo asignar memoria para las posiciones del camino.\n");
+        free(copia->camino);
+        free(copia->enemigos->activos);
+        free(copia->enemigos->vida);
+        free(copia->enemigos->posiciones);
+        free(copia->enemigos);
+        free(copia);
+        return NULL;
+    }
+    memcpy(copia->camino->posiciones, original->camino->posiciones, original->camino->largo_camino * sizeof(Coordenada));
+
+    return copia;
 }

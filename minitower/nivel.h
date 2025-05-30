@@ -31,5 +31,5 @@ void mostrar_nivel(Nivel *info);
 void mostrar_enemigos(Enemigos *enemigos);
 
 void liberar_nivel(Nivel*);
-void copiar_nivel(Nivel *copia, Nivel *original); 
+Nivel* copiar_nivel(Nivel* original); 
 #endif

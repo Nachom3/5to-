@@ -1,6 +1,7 @@
 #include "simulador.h"
 #include "estrategia.h"
 #include "turno.h"
+
 void inicializar_simulacion(const char* filename, Nivel** nivel, Mapa **mapa) {
     FILE* f = fopen(filename, "r");
     if (!f) {
@@ -81,11 +82,10 @@ int simular_nivel(Nivel *nivel, Mapa *mapa, DisposicionTorres colocar_torres) {
     }
 
     return !(nivel->enemigos->cantidad_activos);
-}
-
+}   
 int simular_nivel_rapido(Nivel *nivel, Mapa *mapa) {
     //mapa ya debe tener torres colocadas.
-    inicializar_turno_backtracking(nivel, mapa);
+    inicializar_turno_sintorres(nivel, mapa);
 
     int nro_ataques = mapa->cant_torres * area_ataque(mapa->distancia_ataque);
     Coordenada posiciones_ataque[nro_ataques];
@@ -102,16 +102,7 @@ int simular_nivel_rapido(Nivel *nivel, Mapa *mapa) {
 
     return !(nivel->enemigos->cantidad_activos);
 }
-int simular_nivel_rapido2(Nivel *nivel, Mapa *mapa, Coordenada torres[mapa->cant_torres]) {
-    int ataquesTorresTotales = 0;
-    for(int i = 0; i< mapa->cant_torres; i++){
-        ataquesTorresTotales += calidad_torre(nivel, mapa, torres[i]);
-    }
-    if(ataquesTorresTotales>= nivel->enemigos->vida_inicial){
-            return 1;
-    }
-    return 0;
-}
+
 static int mostrar_menu(DisposicionTorres estrategia_actual, char *ruta_nivel_actual) {
     int opcion = 3;
 

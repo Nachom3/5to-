@@ -32,7 +32,7 @@ static void decidir_nueva_posicion(Enemigos *enemigos, Mapa *mapa) {
     int direccion = rand() % 2; // 0 = abajo, 1 = derecha
     int hay_abajo = camino_abajo(mapa, lider, alto);
     int hay_derecha = camino_derecha(mapa, lider, ancho);
-    //pregunta, que?, porque hay algo random???? y en que caso la posicion del lider va a ser mayor al alto?
+
     if ((lider->x >= alto && lider->y >= ancho && direccion) || // fuera del mapa
         !hay_abajo || (hay_derecha && direccion)) { // derecha forzada o derecha elegida
         lider->x++;
@@ -45,7 +45,7 @@ static void decidir_nueva_posicion(Enemigos *enemigos, Mapa *mapa) {
 
 static int actualizar_activos(Nivel *nivel, Mapa *mapa) {
     int escape = 0;
-    int mia = 0; // mia delagaspera??? de que mia hablas.
+    int mia = 0; 
     
     for (int i = 0; i < nivel->enemigos->cantidad ; i++) {
         if (nivel->enemigos->vida[i] == 0) {
@@ -97,6 +97,7 @@ int buscarEnemigo(Coordenada *posiciones_enemigos, int cant_enemigos, Coordenada
             posicion = i;
         }
     }
+    
     return posicion;
 }
 
@@ -108,22 +109,16 @@ static void disminuir_vidas(Nivel *nivel, Mapa *mapa, Coordenada *posiciones_ata
         enemigo = es_enemigo(mapa->casillas[posiciones_ataque[i].x][posiciones_ataque[i].y]);
         if(!enemigo) continue;
 
-        //buscar enemigo encuentra la posicion en el array de enemigos del enemigo atacado en este ataque si es que lo hay.
         nro_enemigo = buscarEnemigo(nivel->enemigos->posiciones, nivel->enemigos->cantidad, posiciones_ataque[i]);
-        if (nro_enemigo != -1 && nivel->enemigos->vida[nro_enemigo])
+
+        if (nivel->enemigos->vida[nro_enemigo])
             nivel->enemigos->vida[nro_enemigo]--;
     }
 }
 
 int simular_turno(Mapa *mapa, Nivel *nivel, Coordenada posiciones_ataque[], int ataques_efectivos) {
-    // atacan las torres
     disminuir_vidas(nivel, mapa, posiciones_ataque, ataques_efectivos);
     int hubo_escape = actualizar_activos(nivel, mapa);
-    
-    // avanza el enemigo 
-    // a paso redoblado 
-    // al viento desplegado 
-    // su rojo pabellón. 
     desplazar_enemigos(nivel->enemigos);
     decidir_nueva_posicion(nivel->enemigos, mapa);
     actualizar_mapa(nivel, mapa);
@@ -132,7 +127,6 @@ int simular_turno(Mapa *mapa, Nivel *nivel, Coordenada posiciones_ataque[], int 
 }
 
 void inicializar_turno(Nivel *nivel, Mapa *mapa, DisposicionTorres colocar_torres) {
-    //llama a funcion pasado como argumento. era haskell no?.
     colocar_torres(nivel, mapa);
     
     // posicion inicial
@@ -142,10 +136,10 @@ void inicializar_turno(Nivel *nivel, Mapa *mapa, DisposicionTorres colocar_torre
 
     actualizar_mapa(nivel, mapa);
 }
-void inicializar_turno_backtracking(Nivel *nivel, Mapa *mapa) {
+void inicializar_turno_sintorres(Nivel *nivel, Mapa *mapa) {
     // posicion inicial
     nivel->enemigos->posiciones[0].x = 0;
     nivel->enemigos->posiciones[0].y = 0;
     nivel->enemigos->vida[0] = nivel->enemigos->vida_inicial;
-
+    actualizar_mapa(nivel, mapa);
 }
