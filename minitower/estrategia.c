@@ -28,7 +28,7 @@ static void colocar_torre(Mapa *mapa, int x, int y, int nro_torre) {
     mapa->torres[nro_torre].y = y;
 
     // Actualizar el mapa
-    mapa->casillas[y][x] = TORRE;
+    mapa->casillas[x][y] = TORRE;
 }
 
 static int determinar_posicion_torre(int *casilla_elegida, int cant_validas) {

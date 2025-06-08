@@ -62,7 +62,8 @@
     "nivel.h": "c",
     "stdio.h": "c",
     "stdlib.h": "c",
-    "turno.h": "c"
+    "turno.h": "c",
+    "unistd.h": "c"
   },
   "C_Cpp.errorSquiggles": "enabled"
 }
